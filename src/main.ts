@@ -1,7 +1,8 @@
 import dotenv from "dotenv";
 import { spawn } from "child_process";
 import NameDay from "./nameday";
-import { makeTTS } from "./textToSpeech";
+import { makeTTS, splitSentences } from "./textToSpeech";
+import { TimeMark, createVideo } from "./video";
 
 dotenv.config();
 
@@ -11,11 +12,19 @@ const main = async () => {
     fetchOther: false,
   });
 
+  const nameData = names![0];
+
+  const before = `Dnes má svátek ${nameData.name}. V České Republice toto jméno má asi ${nameData.amount} lidí. Je to ${nameData.popularityRank}. nejpoužívanější jméno. Průměrný věk je ${nameData.averageAge} let. Má ${nameData.origin} původ a význam "${nameData.meaning}". Jméno je nejpoužívanější v oblasti ${nameData.area}. `;
+
   const textData = await name.getWikipediaText(names![0].name);
 
-  console.log(names, textData);
+  const ttsResponse = await makeTTS(before + textData);
 
-  makeTTS(textData);
+  createVideo(
+    splitSentences(before + textData),
+    ttsResponse.timepoints as TimeMark[],
+    "output.mp3"
+  );
 };
 
 main();

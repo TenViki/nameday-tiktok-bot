@@ -1,0 +1,2 @@
+ffmpeg -i mc-full.mp4 -filter:v "crop=ih*9/16:ih:y=(ih-(ih*9/16))/2" mc-full-crop.mp4 
+ffmpeg -i mc-full.mp4 -map 0 -c copy -f segment -segment_time 120 -reset_timestamps 1 mc_%03d.mp4

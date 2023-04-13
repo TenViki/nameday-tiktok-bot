@@ -52,7 +52,9 @@ export default class NameDay {
       .replaceAll("</ul>", "")
 
       .replaceAll("<li>", "• ")
-      .replaceAll("</li>", "");
+      .replaceAll("</li>", "")
+
+      .replaceAll("\n", "");
   }
 
   async fetchName(options?: {

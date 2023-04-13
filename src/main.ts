@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 import { spawn } from "child_process";
 import NameDay from "./nameday";
+import { makeTTS } from "./textToSpeech";
 
 dotenv.config();
 
@@ -13,6 +14,8 @@ const main = async () => {
   const textData = await name.getWikipediaText(names![0].name);
 
   console.log(names, textData);
+
+  makeTTS(textData);
 };
 
 main();

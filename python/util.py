@@ -88,11 +88,9 @@ def getTagsExtra(title, tags, session):
             title), "user_id": "", "type": 1, "hashtag_name": verified_tag})
     return title, text_extra
 
-# 上传视频
 
 
 def uploadToTikTok(video, session):
-    # 获取上传前的授权信息
     url = "https://www.tiktok.com/api/v1/video/upload/auth/"
     r = session.get(url)
     access_key = r.json()["video_token_v5"]["access_key_id"]
@@ -101,7 +99,6 @@ def uploadToTikTok(video, session):
     with open(video, "rb") as f:
         video_content = f.read()
     file_size = len(video_content)
-    # 进一步处理授权，拿到最终上传数据
     url = "https://vod-ap-singapore-1.bytevcloudapi.com/"
     request_parameters = f'Action=ApplyUploadInner&FileSize={file_size}&FileType=video&IsInner=1&SpaceName=tiktok&Version=2020-11-19&s=zdxefu8qvq8'
     t = datetime.datetime.utcnow()
@@ -125,7 +122,6 @@ def uploadToTikTok(video, session):
     upload_host = upload_node["UploadHost"]
     session_key = upload_node["SessionKey"]
 
-    # 真正开始上传
     url = f"https://{upload_host}/{store_uri}?uploads"
     rand = ''.join(random.choice(
         ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']) for _ in range(30))
@@ -138,7 +134,6 @@ def uploadToTikTok(video, session):
     if not assertSuccess(url, r):
         return False
     upload_id = r.json()["payload"]["uploadID"]
-    # 文件分割成块上传
     # Split file in chunks of 5242880 bytes
     chunk_size = 5242880
     chunks = []
@@ -147,7 +142,6 @@ def uploadToTikTok(video, session):
         chunks.append(video_content[i:i+chunk_size])
         i += chunk_size
 
-    # 上传数据块
     crcs = []
     for i in range(len(chunks)):
         chunk = chunks[i]

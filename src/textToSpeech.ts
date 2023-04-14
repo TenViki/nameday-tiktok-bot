@@ -29,6 +29,11 @@ const convertTextToSSML = (text: string) => {
 
   return `<speak xmlns="http://www.w3.org/2001/10/synthesis" xmlns:mstts="http://www.w3.org/2001/mstts" xmlns:emo="http://www.w3.org/2009/10/emotionml" version="1.0" xml:lang="cs-CZ">
   <voice name="cs-CZ-AntoninNeural">
+  <mstts:silence  type="Sentenceboundary" value="0ms"/>
+  <mstts:silence  type="Tailing" value="0ms"/>
+  <mstts:silence  type="Tailing-exact" value="0ms"/>
+  <mstts:silence  type="Leading " value="0ms"/>
+  <mstts:silence  type="Leading-exact" value="0ms"/>
   ${sentences.map((s, i) => s + `<bookmark mark="mark-${i}" />`)}
   </voice>
   </speak>`;

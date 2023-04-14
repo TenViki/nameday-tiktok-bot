@@ -35,7 +35,7 @@ def uploadVideo(session_id, video, title, tags):
     tempInfo = r.json()['project']
     creationID = tempInfo["creationID"]
     projectID = tempInfo["project_id"]
-    # 获取账号信息
+
     url = "https://www.tiktok.com/passport/web/account/info/"
     r = session.get(url)
     if not assertSuccess(url, r):
@@ -127,6 +127,4 @@ if __name__ == "__main__":
     parser.add_argument("-s", "--schedule_time", type=int,
                         default=0, help="schedule timestamp for video upload")
     args = parser.parse_args()
-# python3 ./uploader.py -i 'your sessionid' -p ./download/test.mp4 -t  测试上传
-    # uploadVideo('your sessionid', './download/test.mp4', '就问你批不批', ['热门'])
     uploadVideo(args.session_id, args.path, args.title, args.tags)

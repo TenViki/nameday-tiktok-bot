@@ -29,7 +29,7 @@ export const randomNumber = (min: number, max: number) => {
   return Math.floor(Math.random() * (max - min + 1) + min);
 };
 
-const getTextFuncton = (text: string, start: number, end: number) => {
+const getTextFuncton = (text: string, textIndex: number) => {
   function getLines(ctx: any, text: string, maxWidth: number) {
     var words = text.split(" ");
     var lines = [];
@@ -52,7 +52,7 @@ const getTextFuncton = (text: string, start: number, end: number) => {
   const func: editly.CustomCanvasFunction = ({
     canvas,
   }: CustomCanvasFunctionArgs) => {
-    const maxFontSize = canvas.width / 10;
+    const maxFontSize = canvas.width / 12;
     const delay = 0.02;
 
     async function onRender(progress: number) {
@@ -62,7 +62,7 @@ const getTextFuncton = (text: string, start: number, end: number) => {
 
       context.beginPath();
 
-      context.font = maxFontSize + "px Ubuntu";
+      context.font = maxFontSize + "px 'Rammetto One'";
       const lines = getLines(context, text, canvas.width - 100);
 
       const s =
@@ -89,12 +89,33 @@ const getTextFuncton = (text: string, start: number, end: number) => {
       });
 
       // custom font
-
-      context.fillStyle = "white";
       context.textAlign = "center";
 
+      if (textIndex === 0) {
+        context.font = "bold " + maxFontSize * 1.5 + "px 'Rammetto One'";
+        const lns = getLines(context, text, canvas.width - 100);
+
+        context.fillStyle = "#fff9dc";
+
+        lns.forEach((line, index) => {
+          if (index === lns.length - 1) context.fillStyle = "#ffd721";
+
+          context.fillText(
+            line,
+            centerX,
+            centerY +
+              (index - lines.length / 2 + 0.5) * (maxFontSize * 1.5 * 1.4)
+          );
+        });
+
+        return;
+      }
+
+      context.fillStyle = "white";
+
       lines.forEach((line, index) => {
-        context.font = Math.max(sVals[index] * maxFontSize, 1) + "px Ubuntu";
+        context.font =
+          Math.max(sVals[index] * maxFontSize, 1) + "px 'Rammetto One'";
         if (Math.max(sVals[index] * maxFontSize, 1) === 1) return;
 
         context.fillText(
@@ -119,7 +140,8 @@ export const createVideo = async (
   formattedText: string[],
   marks: TimeMark[],
   audioTrack: string,
-  alsoNameday: string[]
+  alsoNameday: string[],
+  fileName: string
 ) => {
   console.log(marks);
 
@@ -157,7 +179,7 @@ export const createVideo = async (
           type: "canvas",
           start: start,
           stop: end,
-          func: getTextFuncton(text, start, end),
+          func: getTextFuncton(text, index),
         } as Layer;
       }),
       ...(alsoNameday.length
@@ -178,7 +200,7 @@ export const createVideo = async (
     width: 810,
     height: 1440,
     fps: 60,
-    outPath: "output.mp4",
+    outPath: "./data/" + fileName + ".mp4",
     audioFilePath: audioTrack,
     clips: [clip],
     defaults: {
@@ -186,9 +208,6 @@ export const createVideo = async (
         duration: 0,
       },
     },
-    // fast: true,
-    // some compress options
-    // customOutputArgs: ["-compression_level", "5"],
   });
 
   return video;

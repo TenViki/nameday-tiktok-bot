@@ -74,8 +74,10 @@ const synthesizerPromise = (synth: sdk.SpeechSynthesizer, ssml: string) =>
     });
   });
 
-export const makeTTSAzure = async (text: string) => {
-  const audioConfig = sdk.AudioConfig.fromAudioFileOutput("output.mp3");
+export const makeTTSAzure = async (text: string, fileName: string) => {
+  const audioConfig = sdk.AudioConfig.fromAudioFileOutput(
+    "data/" + fileName + ".mp3"
+  );
   const speechConfig = sdk.SpeechConfig.fromSubscription(
     process.env.AZURE_KEY!,
     process.env.AZURE_REGION!
@@ -98,7 +100,11 @@ export const makeTTSAzure = async (text: string) => {
 
   console.log(result);
 
-  await writeFile("output.mp3", new Uint8Array(result.audioData), "binary");
+  await writeFile(
+    "data/" + fileName + ".mp3",
+    new Uint8Array(result.audioData),
+    "binary"
+  );
 
   return { result, timeMarks };
 };

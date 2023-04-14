@@ -9,7 +9,7 @@ dotenv.config();
 const main = async () => {
   const name = new NameDay();
   const names = await name.fetchName({
-    fetchOther: false,
+    fetchOther: true,
   });
 
   const nameData = names![0];
@@ -20,11 +20,11 @@ const main = async () => {
 
   const ttsResponse = await makeTTS(before + textData);
 
-  createVideo(
-    splitSentences(before + textData),
-    ttsResponse.timepoints as TimeMark[],
-    "output.mp3"
-  );
+  // createVideo(
+  //   splitSentences(before + textData),
+  //   ttsResponse.timepoints as TimeMark[],
+  //   "output.mp3"
+  // );
 };
 
 main();

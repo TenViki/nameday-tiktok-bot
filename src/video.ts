@@ -1,4 +1,4 @@
-import { Clip } from "editly";
+import { Clip, Layer } from "editly";
 
 import type editly from "editly";
 
@@ -14,10 +14,21 @@ export interface TimeMark {
   name: string;
 }
 
+const convertStringArrayToCzech = (array: string[]) => {
+  // a, b, c a d
+
+  if (array.length === 1) return array[0];
+
+  if (array.length === 2) return array.join(" a ");
+
+  return array.slice(0, -1).join(", ") + " a " + array[array.length - 1];
+};
+
 export const createVideo = async (
   formattedText: string[],
   marks: TimeMark[],
-  audioTrack: string
+  audioTrack: string,
+  alsoNameday: string[]
 ) => {
   console.log(marks);
 
@@ -43,6 +54,16 @@ export const createVideo = async (
           type: "title",
           text,
         },
+        ...(index === 0 && alsoNameday.length
+          ? [
+              {
+                type: "subtitle",
+                text: `Dnes ${
+                  alsoNameday.length == 1 ? "má" : "mají"
+                } také svátek ${convertStringArrayToCzech(alsoNameday)}`,
+              } as Layer,
+            ]
+          : []),
       ],
       duration:
         marks[index]?.timeSeconds - (marks[index - 1]?.timeSeconds || 0) + 0.5,

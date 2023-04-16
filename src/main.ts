@@ -23,9 +23,7 @@ const titles = [
 const emojis = ["😱", "🤯", "🤩", "🤔", "🤨", "😳", "😧", "😨"];
 
 const getRandomTitle = (name: string) => {
-  const title = `${titles[Math.floor(Math.random() * titles.length)]} ${
-    emojis[Math.floor(Math.random() * emojis.length)]
-  }${emojis[Math.floor(Math.random() * emojis.length)]}`;
+  const title = `${titles[Math.floor(Math.random() * titles.length)]}`;
   return title.replace("{{name}}", name);
 };
 
@@ -80,8 +78,14 @@ const renderVideo = async () => {
 const main = async () => {
   console.log("Registering cron job...");
 
+  // if argument --now is passed, render video immediately
+  if (process.argv[2] === "--now") {
+    await renderVideo();
+    return;
+  }
+
   try {
-    new CronJob("0 7 * * *", renderVideo, null, true);
+    new CronJob("0 6 * * *", renderVideo, null, true);
 
     console.log("Cron job registered");
   } catch (err) {

@@ -155,6 +155,8 @@ export const createVideo = async (
     .toString()
     .padStart(3, "0")}.mp4`;
 
+  console.log("Using clip: ", randomClipName);
+
   const editly = await getEditly();
 
   const clip: Clip = {

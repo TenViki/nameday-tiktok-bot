@@ -18,6 +18,7 @@
     "dotenv": "^16.0.3",
     "editly": "^0.14.2",
     "gl": "^6.0.2",
+    "googleapis": "^118.0.0",
     "microsoft-cognitiveservices-speech-sdk": "^1.27.0",
     "nodemon": "^2.0.22",
     "ts-node": "^10.9.1",

@@ -2,6 +2,7 @@ import { CustomCanvasFunctionArgs } from "editly";
 import { Clip, Layer } from "editly";
 
 import type editly from "editly";
+import { formatMonth } from "./month.util";
 
 const getEditly = async (): Promise<typeof editly> => {
   const lib = await (eval(`import('editly')`) as Promise<{
@@ -29,7 +30,12 @@ export const randomNumber = (min: number, max: number) => {
   return Math.floor(Math.random() * (max - min + 1) + min);
 };
 
-const getTextFuncton = (text: string, textIndex: number) => {
+const cubicEaseOut = (t: number) => {
+  const x = Math.min(Math.max(t, 0), 1);
+  return 1 - Math.pow(1 - x, 3);
+};
+
+const getTextFuncton = (text: string, textIndex: number, date: string) => {
   function getLines(ctx: any, text: string, maxWidth: number) {
     var words = text.split(" ");
     var lines = [];
@@ -70,21 +76,9 @@ const getTextFuncton = (text: string, textIndex: number) => {
 
       const sVals = lines.map((_, i) => {
         const slope = 2 / (1 - (lines.length - 1) * delay);
-        return (
-          1 -
-          Math.pow(
-            1 -
-              Math.max(
-                Math.min(
-                  (-Math.abs(slope * Math.max(progress - i * delay, 0) - 1) +
-                    1) *
-                    4,
-                  1
-                ),
-                0
-              ),
-            3
-          )
+
+        return cubicEaseOut(
+          (-Math.abs(slope * Math.max(progress - i * delay, 0) - 1) + 1) * 4
         );
       });
 
@@ -92,13 +86,36 @@ const getTextFuncton = (text: string, textIndex: number) => {
       context.textAlign = "center";
 
       if (textIndex === 0) {
+        let renderDate = true;
+        context.font = maxFontSize + "px 'Rammetto One'";
+        if (progress > 0.5) {
+          if (Math.max(sVals[0] * maxFontSize, 1) === 1) renderDate = false;
+          context.font =
+            Math.max(sVals[0] * maxFontSize, 1) + "px 'Rammetto One'";
+        }
+        context.fillStyle = "#fff";
+
+        if (renderDate) {
+          context.fillText(date, centerX, 3.5 * maxFontSize * 1.5);
+        }
+
         context.font = "bold " + maxFontSize * 1.5 + "px 'Rammetto One'";
         const lns = getLines(context, text, canvas.width - 100);
+
+        // if (times < 0.1) return;
 
         context.fillStyle = "#fff9dc";
 
         lns.forEach((line, index) => {
           if (index === lns.length - 1) context.fillStyle = "#ffd721";
+
+          if (progress > 0.5) {
+            context.font =
+              "bold " +
+              Math.max(sVals[index] * maxFontSize, 1) * 1.5 +
+              "px 'Rammetto One'";
+            if (Math.max(sVals[index] * maxFontSize, 1) === 1) return;
+          }
 
           context.fillText(
             line,
@@ -141,7 +158,8 @@ export const createVideo = async (
   marks: TimeMark[],
   audioTrack: string,
   alsoNameday: string[],
-  fileName: string
+  fileName: string,
+  date: string
 ) => {
   console.log(marks);
 
@@ -181,7 +199,7 @@ export const createVideo = async (
           type: "canvas",
           start: start,
           stop: end,
-          func: getTextFuncton(text, index),
+          func: getTextFuncton(text, index, formatMonth(date)),
         } as Layer;
       }),
       ...(alsoNameday.length
@@ -201,7 +219,7 @@ export const createVideo = async (
   const video = await editly({
     width: 810,
     height: 1440,
-    fps: 60,
+    fps: 30,
     outPath: "./data/" + fileName + ".mp4",
     audioFilePath: audioTrack,
     clips: [clip],
